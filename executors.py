@@ -16,12 +16,12 @@ class Executors():
         return ThreadExecutor()
         
     @staticmethod
-    def thread_pool(size):
-        return ThreadPoolExecutor(size)
+    def thread_pool(pool_size):
+        return ThreadPoolExecutor(pool_size)
         
     @staticmethod
-    def process_pool(size):
-        return ProcessPoolExecutor(size)
+    def process_pool(pool_size):
+        return ProcessPoolExecutor(pool_size)
 
 class Executor(metaclass=ABCMeta):
     
