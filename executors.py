@@ -96,11 +96,12 @@ if __name__ == "__main__":
             sleep(duration)
             print(text)
         return anonymous
-    executor = Executors.thread_pool(1)
+    executor = Executors.process_pool(1)
     executor.execute(sleep_n_print(2, "A"))
     print(" --> 1")
     executor.execute(sleep_n_print(3, "B"))
     print(" --> 3")
     executor.execute(sleep_n_print(2, "C"))
     print(" --> 2")
+    sleep(10)
     executor.shutdown()

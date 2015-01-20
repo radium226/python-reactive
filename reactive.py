@@ -143,9 +143,27 @@ def defer(create_observable):
         create_observable().subscribe(subscriber)
     return Publisher(on_subscribe)
 
-@extensionmethod(Publisher)
-def apply(publisher, function):
-    class ApplyProcessor(Processor):
+@extensionmethod(Publisher, name="timeout")
+def __timeout(publisher, duration):
+    class TimeoutProcessor(Processor):
+    
+        def __call__(self, subscriber):
+            lock = Lock()
+            class PutSubscriber(Subscriber):
+                
+                def on_next(self, element):
+                    queue.put(element)
+                
+                def on_completed():
+                    queue.put(None)
+            
+            
+            
+            
+            
+@extensionmethod(Publisher, name="map")
+def __map(publisher, function):
+    class MapProcessor(Processor):
         
         def __call__(self, applyped_element_subscriber):
             class ElementSubscriber(Subscriber):
@@ -159,13 +177,13 @@ def apply(publisher, function):
                 
             return ElementSubscriber()
     
-    apply_processor = ApplyProcessor()
-    return publisher.lift(apply_processor)
+    map_processor = MapProcessor()
+    return publisher.lift(map_processor)
     
 
 @extensionmethod(Publisher)
 def upper_text(publisher):
-    return publisher.apply(lambda text: text.upper())
+    return publisher.map(lambda text: text.upper())
 
 @extensionmethod(Publisher, decorator = staticmethod)
 def merge(publisher):
@@ -210,8 +228,8 @@ def delay(publisher, duration):
     return publisher.lift(AnonymousProcessor())
     
 @extensionmethod(Publisher)
-def flat_apply(publisher, function):
-    return Publisher.merge(publisher.apply(function))
+def flat_map(publisher, function):
+    return Publisher.merge(publisher.map(function))
     
 def huge_process(text, executor):
     def defer():
@@ -243,6 +261,8 @@ if __name__ == "__main__":
     Publisher.merge(abc_def_publisher_publisher).subscribe(PrintSubscriber())
     
     
-    Publisher.just("h4x0r", "l33t", "suxXx3r").flat_apply(partial(huge_process, executor=executor)).subscribe(PrintSubscriber())
+    Publisher.just("h4x0r", "l33t", "suxXx3r").flat_map(partial(huge_process, executor=executor)).subscribe(PrintSubscriber())
     
+    sleep(10)
+
     executor.shutdown()
